@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Movara Transport</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .header {
+      background: #111827;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .header p {
+      margin-top: 5px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 15px;
+    }
+
+    .map {
+      height: 180px;
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border-radius: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 2px solid #93c5fd;
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .booking-card h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .location {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .vehicles {
+      margin-top: 18px;
+    }
+
+    .vehicle-list {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .vehicle {
+      flex: 1;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 12px 5px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .vehicle.active {
+      border-color: #16a34a;
+      background: #dcfce7;
+    }
+
+    .fare-box {
+      margin-top: 18px;
+      background: #f0fdf4;
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .fare-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 7px 0;
+    }
+
+    .book-btn {
+      width: 100%;
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: bold;
+      margin-top: 18px;
+      cursor: pointer;
+    }
+
+    .book-btn:hover {
+      background: #15803d;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>🚖 MOVARA TRANSPORT</h1>
+    <p>Safe • Fast • Affordable</p>
+  </div>
+
+  <div class="container">
+
+    <div class="map">
+      🗺️ Live Map Coming Soon
+    </div>
+
+    <div class="booking-card">
+
+      <h2>Book Your Ride</h2>
+
+      <div class="location">
+        <label>📍 Pickup Location</label>
+        <input type="text" id="pickup" placeholder="Enter pickup location">
+      </div>
+
+      <div class="location">
+        <label>📍 Drop Location</label>
+        <input type="text" id="drop" placeholder="Enter destination">
+      </div>
+
+      <div class="location">
+        <label>📏 Distance (KM)</label>
+        <input type="number" id="distance" placeholder="Enter distance" oninput="calculateFare()">
+      </div>
+
+      <div class="vehicles">
+        <label>Select Vehicle</label>
+
+        <div class="vehicle-list">
+
+          <div class="vehicle active" onclick="selectVehicle('Bike', 10, this)">
+            🛵<br>Bike<br>₹10/KM
+          </div>
+
+          <div class="vehicle" onclick="selectVehicle('Auto', 15, this)">
+            🛺<br>Auto<br>₹15/KM
+          </div>
+
+          <div class="vehicle" onclick="selectVehicle('Cab', 20, this)">
+            🚗<br>Cab<br>₹20/KM
+          </div>
+
+        </div>
+      </div>
+
+      <div class="fare-box">
+        <div class="fare-row">
+          <span>Vehicle:</span>
+          <strong id="vehicleName">Bike</strong>
+        </div>
+
+        <div class="fare-row">
+          <span>Distance:</span>
+          <strong id="distanceText">0 KM</strong>
+        </div>
+
+        <div class="fare-row">
+          <span>Estimated Fare:</span>
+          <strong id="fare">₹0</strong>
+        </div>
+      </div>
+
+      <button class="book-btn" onclick="bookRide()">
+        BOOK RIDE 🚖
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 2026 Movara Transport
+  </div>
+
+  <script>
+    let selectedVehicle = "Bike";
+    let pricePerKm = 10;
+
+    function selectVehicle(vehicle, price, element) {
+
+      selectedVehicle = vehicle;
+      pricePerKm = price;
+
+      document.querySelectorAll(".vehicle").forEach(item => {
+        item.classList.remove("active");
+      });
+
+      element.classList.add("active");
+
+      document.getElementById("vehicleName").innerText = vehicle;
+
+      calculateFare();
+    }
+
+    function calculateFare() {
+
+      let distance = document.getElementById("distance").value;
+
+      if (!distance || distance <= 0) {
+        distance = 0;
+      }
+
+      let fare = distance * pricePerKm;
+
+      document.getElementById("distanceText").innerText =
+        distance + " KM";
+
+      document.getElementById("fare").innerText =
+        "₹" + fare;
+    }
+
+    function bookRide() {
+
+      const pickup = document.getElementById("pickup").value;
+      const drop = document.getElementById("drop").value;
+      const distance = document.getElementById("distance").value;
+      const fare = document.getElementById("fare").innerText;
+
+      if (!pickup || !drop || !distance) {
+        alert("Please enter Pickup, Drop and Distance!");
+        return;
+      }
+
+      alert(
+        "Ride Booking Details\\n\\n" +
+        "Pickup: " + pickup + "\\n" +
+        "Drop: " + drop + "\\n" +
+        "Vehicle: " + selectedVehicle + "\\n" +
+        "Distance: " + distance + " KM\\n" +
+        "Fare: " + fare
+      );
+    }
+  </script>
+
+</body>
+          </html>
