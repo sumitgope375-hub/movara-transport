@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Movara Transport - Book Your Ride</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#f5f7fb;
+  color:#1f2937;
+}
+
+.header{
+  background:#111827;
+  color:white;
+  padding:18px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:bold;
+}
+
+.tagline{
+  font-size:13px;
+  color:#cbd5e1;
+  margin-top:5px;
+}
+
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:15px;
+}
+
+/* MAP */
+
+.map-box{
+  height:220px;
+  background:linear-gradient(135deg,#dbeafe,#bfdbfe);
+  border-radius:22px;
+  margin-bottom:18px;
+  position:relative;
+  overflow:hidden;
+  border:2px solid #93c5fd;
+}
+
+.map-title{
+  position:absolute;
+  top:20px;
+  left:20px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.map-road{
+  width:130%;
+  height:35px;
+  background:white;
+  position:absolute;
+  top:90px;
+  left:-40px;
+  transform:rotate(-12deg);
+  opacity:.8;
+}
+
+.map-road2{
+  width:130%;
+  height:28px;
+  background:white;
+  position:absolute;
+  top:145px;
+  left:-30px;
+  transform:rotate(18deg);
+  opacity:.8;
+}
+
+.current-location{
+  position:absolute;
+  bottom:18px;
+  right:18px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 15px;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* BOOKING CARD */
+
+.booking-card{
+  background:white;
+  padding:22px;
+  border-radius:25px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+.booking-card h2{
+  margin-bottom:20px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-top:15px;
+  margin-bottom:7px;
+}
+
+input{
+  width:100%;
+  padding:15px;
+  border:1px solid #d1d5db;
+  border-radius:14px;
+  font-size:16px;
+}
+
+/* VEHICLES */
+
+.vehicle-title{
+  margin-top:22px;
+  font-weight:bold;
+}
+
+.vehicles{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.vehicle{
+  flex:1;
+  border:2px solid #e5e7eb;
+  border-radius:16px;
+  padding:15px 8px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+  background:white;
+}
+
+.vehicle.active{
+  border-color:#16a34a;
+  background:#dcfce7;
+}
+
+.vehicle-icon{
+  font-size:28px;
+}
+
+.vehicle-name{
+  margin-top:5px;
+  font-weight:bold;
+}
+
+.vehicle-price{
+  color:#4b5563;
+  font-size:14px;
+}
+
+/* FARE */
+
+.fare-box{
+  margin-top:22px;
+  background:#ecfdf5;
+  border-radius:18px;
+  padding:18px;
+}
+
+.fare-row{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+  font-size:16px;
+}
+
+.fare-total{
+  font-size:23px;
+  font-weight:bold;
+  color:#15803d;
+}
+
+/* BUTTON */
+
+.book-btn{
+  width:100%;
+  margin-top:22px;
+  padding:18px;
+  border:none;
+  border-radius:16px;
+  background:#16a34a;
+  color:white;
+  font-size:19px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* CONFIRMATION */
+
+.confirmation{
+  display:none;
+  background:white;
+  padding:25px;
+  border-radius:25px;
+  text-align:center;
+  box-shadow:0 8px 30px rgba(0,0,0,.1);
+}
+
+.success-icon{
+  font-size:70px;
+}
+
+.confirmation h2{
+  margin:15px 0;
+}
+
+.booking-details{
+  text-align:left;
+  background:#f3f4f6;
+  padding:18px;
+  border-radius:15px;
+  margin-top:15px;
+  line-height:1.8;
+}
+
+.whatsapp-btn{
+  display:block;
+  text-decoration:none;
+  background:#25D366;
+  color:white;
+  padding:16px;
+  border-radius:15px;
+  margin-top:20px;
+  font-weight:bold;
+}
+
+.new-booking{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:none;
+  border-radius:15px;
+  background:#111827;
+  color:white;
+  font-weight:bold;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#6b7280;
+  font-size:14px;
+}
+
+@media(max-width:400px){
+  .vehicles{
+    gap:6px;
+  }
+
+  .vehicle{
+    padding:12px 5px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">🚕 MOVARA TRANSPORT</div>
+  <div class="tagline">Safe • Fast • Affordable</div>
+</div>
+
+<div class="container">
+
+<!-- MAP -->
+
+<div class="map-box">
+
+  <div class="map-title">
+    🗺️ Live Ride Map
+  </div>
+
+  <div class="map-road"></div>
+  <div class="map-road2"></div>
+
+  <button class="current-location" onclick="getLocation()">
+    📍 Current Location
+  </button>
+
+</div>
+
+
+<!-- BOOKING FORM -->
+
+<div class="booking-card" id="bookingForm">
+
+<h2>Book Your Ride</h2>
+
+<label>👤 Your Name</label>
+<input type="text" id="customerName" placeholder="Enter your name">
+
+<label>📞 Mobile Number</label>
+<input type="tel" id="customerPhone" placeholder="Enter mobile number">
+
+<label>📍 Pickup Location</label>
+<input type="text" id="pickup" placeholder="Example: Kiriburu">
+
+<label>🏁 Drop Location</label>
+<input type="text" id="drop" placeholder="Example: Barbil">
+
+<label>📏 Distance (KM)</label>
+<input type="number" id="distance" value="10" min="1" oninput="calculateFare()">
+
+
+<div class="vehicle-title">
+Select Vehicle
+</div>
+
+<div class="vehicles">
+
+<div class="vehicle active" onclick="selectVehicle('Bike',10,this)">
+<div class="vehicle-icon">🛵</div>
+<div class="vehicle-name">Bike</div>
+<div class="vehicle-price">₹10 / KM</div>
+</div>
+
+<div class="vehicle" onclick="selectVehicle('Auto',15,this)">
+<div class="vehicle-icon">🛺</div>
+<div class="vehicle-name">Auto</div>
+<div class="vehicle-price">₹15 / KM</div>
+</div>
+
+<div class="vehicle" onclick="selectVehicle('Cab',20,this)">
+<div class="vehicle-icon">🚕</div>
+<div class="vehicle-name">Cab</div>
+<div class="vehicle-price">₹20 / KM</div>
+</div>
+
+</div>
+
+
+<div class="fare-box">
+
+<div class="fare-row">
+<span>Vehicle</span>
+<strong id="selectedVehicle">Bike</strong>
+</div>
+
+<div class="fare-row">
+<span>Distance</span>
+<strong id="selectedDistance">10 KM</strong>
+</div>
+
+<div class="fare-row">
+<span>Rate</span>
+<strong id="selectedRate">₹10 / KM</strong>
+</div>
+
+<hr style="margin:12px 0;border:.5px solid #bbf7d0">
+
+<div class="fare-row fare-total">
+<span>Estimated Fare</span>
+<span id="fare">₹100</span>
+</div>
+
+</div>
+
+<button class="book-btn" onclick="bookRide()">
+BOOK RIDE 🚕
+</button>
+
+</div>
+
+
+<!-- CONFIRMATION -->
+
+<div class="confirmation" id="confirmation">
+
+<div class="success-icon">✅</div>
+
+<h2>Ride Booked Successfully!</h2>
+
+<p>Your booking request has been created.</p>
+
+<div class="booking-details" id="bookingDetails"></div>
+
+<a id="whatsappLink" class="whatsapp-btn" target="_blank">
+💬 Send Booking on WhatsApp
+</a>
+
+<button class="new-booking" onclick="newBooking()">
++ Book Another Ride
+</button>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 Movara Transport
+</footer>
+
+
+<script>
+
+let selectedVehicle = "Bike";
+let rate = 10;
+
+
+/* VEHICLE SELECT */
+
+function selectVehicle(vehicle, vehicleRate, element){
+
+selectedVehicle = vehicle;
+rate = vehicleRate;
+
+document.querySelectorAll(".vehicle").forEach(function(card){
+card.classList.remove("active");
+});
+
+element.classList.add("active");
+
+calculateFare();
+
+}
+
+
+/* CALCULATE FARE */
+
+function calculateFare(){
+
+let distance = document.getElementById("distance").value;
+
+if(distance <= 0 || distance === ""){
+distance = 0;
+}
+
+let totalFare = distance * rate;
+
+document.getElementById("selectedVehicle").innerText = selectedVehicle;
+
+document.getElementById("selectedDistance").innerText =
+distance + " KM";
+
+document.getElementById("selectedRate").innerText =
+"₹" + rate + " / KM";
+
+document.getElementById("fare").innerText =
+"₹" + totalFare;
+
+}
+
+
+/* CURRENT LOCATION */
+
+function getLocation(){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+let latitude = position.coords.latitude;
+let longitude = position.coords.longitude;
+
+document.getElementById("pickup").value =
+"Current Location (" +
+latitude.toFixed(4) +
+", " +
+longitude.toFixed(4) +
+")";
+
+alert("Current location added!");
+
+}, function(){
+
+alert("Location access allow karo.");
+
+});
+
+}else{
+
+alert("Your browser does not support location.");
+
+}
+
+}
+
+
+/* BOOK RIDE */
+
+function bookRide(){
+
+let name = document.getElementById("customerName").value;
+let phone = document.getElementById("customerPhone").value;
+let pickup = document.getElementById("pickup").value;
+let drop = document.getElementById("drop").value;
+let distance = document.getElementById("distance").value;
+
+if(name === "" || phone === "" || pickup === "" || drop === ""){
+
+alert("Please fill all details.");
+
+return;
+
+}
+
+let totalFare = distance * rate;
+
+let booking = {
+
+bookingId:"MOV" + Date.now(),
+name:name,
+phone:phone,
+pickup:pickup,
+drop:drop,
+distance:distance,
+vehicle:selectedVehicle,
+fare:totalFare,
+date:new Date().toLocaleString()
+
+};
+
+
+/* SAVE DATA */
+
+let bookings =
+JSON.parse(localStorage.getItem("movaraBookings")) || [];
+
+bookings.push(booking);
+
+localStorage.setItem(
+"movaraBookings",
+JSON.stringify(bookings)
+);
+
+
+/* SHOW CONFIRMATION */
+
+document.getElementById("bookingForm").style.display = "none";
+
+document.getElementById("confirmation").style.display = "block";
+
+document.getElementById("bookingDetails").innerHTML =
+
+"<strong>Booking ID:</strong> " + booking.bookingId + "<br>" +
+
+"<strong>Name:</strong> " + name + "<br>" +
+
+"<strong>Phone:</strong> " + phone + "<br>" +
+
+"<strong>Pickup:</strong> " + pickup + "<br>" +
+
+"<strong>Drop:</strong> " + drop + "<br>" +
+
+"<strong>Vehicle:</strong> " + selectedVehicle + "<br>" +
+
+"<strong>Distance:</strong> " + distance + " KM<br>" +
+
+"<strong>Fare:</strong> ₹" + totalFare;
+
+
+/* WHATSAPP */
+
+let whatsappNumber = "919040425067";
+
+let message =
+"🚕 *NEW MOVARA RIDE BOOKING*%0A%0A" +
+
+"Booking ID: " + booking.bookingId + "%0A" +
+
+"Customer: " + name + "%0A" +
+
+"Phone: " + phone + "%0A" +
+
+"Pickup: " + pickup + "%0A" +
+
+"Drop: " + drop + "%0A" +
+
+"Vehicle: " + selectedVehicle + "%0A" +
+
+"Distance: " + distance + " KM%0A" +
+
+"Fare: ₹" + totalFare;
+
+document.getElementById("whatsappLink").href =
+"https://wa.me/" +
+whatsappNumber +
+"?text=" +
+message;
+
+}
+
+
+/* NEW BOOKING */
+
+function newBooking(){
+
+document.getElementById("confirmation").style.display = "none";
+
+document.getElementById("bookingForm").style.display = "block";
+
+document.getElementById("customerName").value = "";
+
+document.getElementById("customerPhone").value = "";
+
+document.getElementById("pickup").value = "";
+
+document.getElementById("drop").value = "";
+
+document.getElementById("distance").value = "10";
+
+calculateFare();
+
+}
+
+calculateFare();
+
+</script>
+
+</body>
+  </html>
